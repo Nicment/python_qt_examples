@@ -11,9 +11,33 @@ Website: zetcode.com
 """
 import sys
 from PyQt5.QtCore import (Qt , pyqtSlot)
-from PyQt5.QtWidgets import (QPushButton, QWidget, QLCDNumber, QSlider,
-                             QVBoxLayout, QApplication, QGridLayout)
+from PyQt5.QtGui import QPainter, QBrush, QPen  
+from PyQt5.QtWidgets import (QHBoxLayout, QPushButton, QWidget, QLCDNumber, QSlider,
+                             QVBoxLayout, QApplication, QGridLayout, QLabel)
 
+
+class widgetGenerator(QWidget):
+    
+    def __init__(self, labelText:str, ledColor:str):
+        super().__init__()    
+        self.labelText = labelText 
+        self.ledColor = ledColor
+    
+    def sensorWidget(self):
+
+        self.sensor = QLabel(self.labelText,self)
+        
+        self.ledSensor = QLabel("",self) 
+        self.ledSensor.setStyleSheet(f"border:3px solid black; border-radius: 40px; background-color: {self.ledColor}")   
+                
+        self.sensor_mas_led = QWidget()
+        self.sensor_mas_led.layout = QHBoxLayout() 
+        self.sensor_mas_led.setLayout(self.sensor_mas_led.layout) 
+        self.sensor_mas_led.layout.addWidget(self.sensor)
+        self.sensor_mas_led.layout.addWidget(self.ledSensor)
+        
+        return self.sensor_mas_led
+    
 
 class ExampleDisplay(QWidget):
 
@@ -26,46 +50,41 @@ class ExampleDisplay(QWidget):
     def initUI(self):
         self.resize(800, 600)
         mainLayout = QGridLayout()
+        #internalLayout = QGridLayout()
         self.change = 1
-
-        lcd = QLCDNumber(self)
-        sld = QSlider(Qt.Horizontal, self)
-
-        self.vbox = QWidget()
-        self.vbox.layout = QVBoxLayout()
-        self.vbox.layout.addWidget(lcd)
-        self.vbox.layout.addWidget(sld)
-        self.vbox.setLayout(self.vbox.layout)
-        sld.valueChanged.connect(lcd.display)
         
-        self.lcd1 = QLCDNumber(self)
-        sld1 = QSlider(Qt.Horizontal, self)
-        button1 = QPushButton("Boton",self)
-
-        self.vbox1 = QWidget()
-        self.vbox1.layout = QVBoxLayout()
-        self.vbox1.layout.addWidget(self.lcd1)
-        self.vbox1.layout.addWidget(sld1)
-        self.vbox1.layout.addWidget(button1)
-        button1.clicked.connect(self.on_click)
-        self.vbox1.setLayout(self.vbox1.layout)
-        sld1.valueChanged.connect(self.lcd1.display)
-
-        mainLayout.addWidget(self.vbox1, 0,0)
-        mainLayout.addWidget(self.vbox,0,1)
+        self.driverStatus = widgetGenerator("Driver Status","green").sensorWidget()
+        self.tempStatus = widgetGenerator("Temp Status", "red").sensorWidget()
+        self.sensor1= widgetGenerator("Sensor 1","red").sensorWidget()
+        self.sensor2= widgetGenerator("Sensor 2", "green").sensorWidget()
+        self.sensor3= widgetGenerator("sensor 3", "blue").sensorWidget()
+        self.sensor4= widgetGenerator("sensor 4", "green").sensorWidget()
+        
+        
+        mainLayout.addWidget(self.driverStatus, 0,0)
+        mainLayout.addWidget(self.tempStatus,1,0)
+        
+        mainLayout.addWidget(self.sensor1, 0,1)
+        mainLayout.addWidget(self.sensor2, 1,1)
+        
+        mainLayout.addWidget(self.sensor3, 0,2)
+        mainLayout.addWidget(self.sensor4, 1,2)
+        
         
         self.setWindowTitle('Signal and slot')
         self.setLayout(mainLayout)
         
         self.show()
+             
+        
         
     @pyqtSlot()
     def on_click(self):
         if self.change:     
-            self.lcd1.hide()
+            print("Hola Mundo")
             self.change = 0
         else:
-            self.lcd1.show()
+            print("Adios mundo")
             self.change = 1
                 
 
