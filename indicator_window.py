@@ -18,48 +18,21 @@ from PyQt5.QtWidgets import (QHBoxLayout, QFrame, QSplitter, QWidget, QLCDNumber
                              QVBoxLayout, QApplication, QGridLayout, QLabel)
 
  
-class ExampleDisplay(QWidget):
+class signalsStateWindow(QWidget):
 
     def __init__(self):
         super().__init__()
         self.changeFactor = 100
         self.initUI()
         
-        
-    def resizeEvent(self, a0: QtGui.QResizeEvent):
-        
-        self.changeFactorWidth = self.frameSize().width()//20
-        self.changeFactorHeight = self.frameSize().height()//20
-        if self.changeFactorWidth > self.changeFactorHeight:
-            self.changeFactor = self.changeFactorWidth
-        else: self.changeFactor = self.changeFactorHeight 
-        
-        self.driverLed.setFactorResize(self.changeFactor)
-        self.tempLed.setFactorResize(self.changeFactor)
-        self.sensor1Led.setFactorResize(self.changeFactor)
-        self.sensor2Led.setFactorResize(self.changeFactor)
-        self.sensor3Led.setFactorResize(self.changeFactor)
-        self.sensor4Led.setFactorResize(self.changeFactor)
-        self.electroValLed.setFactorResize(self.changeFactor)
-        #self.electroValLed.setColor("purple")
-        
-        self.driverText.changeStateText(self.changeFactor)
-        self.tempText.changeStateText(self.changeFactor)
-        self.sensor1Text.changeStateText(self.changeFactor)
-        self.sensor2Text.changeStateText(self.changeFactor)
-        self.sensor3Text.changeStateText(self.changeFactor)
-        self.sensor4Text.changeStateText(self.changeFactor)
-        self.electroValText.changeStateText(self.changeFactor)
-        #self.led.setFactorResize(self.changeFactor)
-
-
     def initUI(self):
         self.resize(1000, 500)
         
-        mainLayout = QGridLayout()
         self.change = 1
         self.temperature = 20
         self.humidity = 80
+        
+        """-------------- Definicion de los Textos  ----------------------"""  
                 
         self.driverText = textWidget("D Status")
         self.tempText = textWidget("T Status")
@@ -73,14 +46,21 @@ class ExampleDisplay(QWidget):
         self.displayTemperatureText = textWidget("Temp (°C)")
         self.displayHumidityText = textWidget("Humidity (%)")
         self.displayVelocityText = textWidget("Velocity (rpm)")
-                
+        
+        self.checkSensorText = textWidget("Check")
+        
+        """-------------- Definicion de los Leds  ----------------------"""  
+              
         self.driverLed = LedIndicator("red")
         self.tempLed = LedIndicator("red")
+        self.electroValLed = LedIndicator("green")
+        
         self.sensor1Led = LedIndicator("green")
         self.sensor2Led = LedIndicator("red")
         self.sensor3Led = LedIndicator("green")
         self.sensor4Led = LedIndicator("red")
-        self.electroValLed = LedIndicator("green")
+        
+        self.checkSensorLed = LedIndicator("green")
         
         self.displayTemperature = displayWidget(self.temperature).generate()
         self.displayHumidity = displayWidget(self.humidity).generate()
@@ -97,6 +77,9 @@ class ExampleDisplay(QWidget):
         
         self.dataTemp = widgetGenerator(self.displayTemperatureText,"white").displayWidget(f"{self.temperature}")
         self.dataHum = widgetGenerator(self.displayHumidityText,"white").displayWidget(f"{self.humidity}")
+        
+        
+        #self.checkSensor = widgetGenerator(self.checkSensorText,self.checkSensorLed).verticalBoxWidget()
         
         self.sensores = QWidget()
         self.sensores.layout = QHBoxLayout()
@@ -117,6 +100,14 @@ class ExampleDisplay(QWidget):
         self.dataState.layout.setAlignment(Qt.AlignCenter)
         self.dataState.setStyleSheet("border:0px solid black;")
         
+        self.checkSensorState = QWidget()
+        self.checkSensorState.layout = QVBoxLayout()
+        self.checkSensorState.setLayout(self.checkSensorState.layout) 
+        self.checkSensorState.layout.addWidget(self.checkSensorLed)
+        self.checkSensorState.layout.addWidget(self.checkSensorText.createText())
+        self.checkSensorState.layout.setAlignment(Qt.AlignCenter)
+        self.checkSensorState.setStyleSheet("border:0px solid black;")
+        
         hbox = QHBoxLayout(self)
         
         topTop = QFrame(self)
@@ -124,8 +115,7 @@ class ExampleDisplay(QWidget):
         
         topleft = self.dataState
 
-        topright = QFrame(self)
-        topright.setFrameShape(QFrame.StyledPanel)
+        topright = self.checkSensorState
 
         bottom = self.sensores
 
@@ -140,45 +130,34 @@ class ExampleDisplay(QWidget):
 
         hbox.addWidget(splitter2)
         
-        mainLayout.addWidget(self.dataState, 0,0)
-        mainLayout.addWidget(self.sensores,1,0)
-        #mainLayout.addWidget(self.elvaStatus,2,0) 
-        
-        #mainLayout.addWidget(self.elvaStatus, 0,1)
-        #mainLayout.addWidget(self.sensor2, 1,1)
-        
-        #mainLayout.addWidget(self.packSensor1, 0,2)
-        #mainLayout.addWidget(self.sensor2, 1,2)
-        
-        #mainLayout.addWidget(self.packSensor2, 0,3)
-        #mainLayout.addWidget(self.sensor4, 1,3)
-        
-        #mainLayout.addWidget(self.dataTemp, 2,1)
-        #mainLayout.addWidget(self.dataHum,2,2)
-        
-               
-        
-        self.setWindowTitle('Signal and slot')
+        self.setWindowTitle('Status Sensors')
         self.setLayout(hbox)
         
         self.show()
-             
-    @pyqtSlot()
-    def on_click(self):
-        if self.change:     
-            print("Hola Mundo")
-            self.change = 0
-        else:
-            print("Adios mundo")
-            self.change = 1
+            
+    def resizeEvent(self, a0: QtGui.QResizeEvent):
+        
+        self.changeFactorWidth = self.frameSize().width()//20
+        self.changeFactorHeight = self.frameSize().height()//20
+        if self.changeFactorWidth > self.changeFactorHeight:
+            self.changeFactor = self.changeFactorWidth
+        else: self.changeFactor = self.changeFactorHeight 
+        
+        self.driverLed.setFactorResize(self.changeFactor)
+        self.tempLed.setFactorResize(self.changeFactor)
+        self.sensor1Led.setFactorResize(self.changeFactor)
+        self.sensor2Led.setFactorResize(self.changeFactor)
+        self.sensor3Led.setFactorResize(self.changeFactor)
+        self.sensor4Led.setFactorResize(self.changeFactor)
+        self.electroValLed.setFactorResize(self.changeFactor)
+        self.checkSensorLed.setFactorResize(self.changeFactor*2)
+        
+        self.driverText.changeStateText(self.changeFactor)
+        self.tempText.changeStateText(self.changeFactor)
+        self.sensor1Text.changeStateText(self.changeFactor)
+        self.sensor2Text.changeStateText(self.changeFactor)
+        self.sensor3Text.changeStateText(self.changeFactor)
+        self.sensor4Text.changeStateText(self.changeFactor)
+        self.electroValText.changeStateText(self.changeFactor)
+        self.checkSensorText.changeStateText(self.changeFactor)
                 
-
-
-def main():
-    app = QApplication(sys.argv)
-    ex  = ExampleDisplay()
-    sys.exit(app.exec_())
-
-
-if __name__ == '__main__':
-    main()

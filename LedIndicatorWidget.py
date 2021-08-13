@@ -16,9 +16,6 @@ class LedIndicator(QAbstractButton):
         
         self.setCheckable(True)
         self.setDisabled(True)
-        
-        
-        #self.colorOperator = QColor(60,30,60)
 
     def resizeEvent(self, QResizeEvent):
         self.update()
@@ -65,7 +62,11 @@ class LedIndicator(QAbstractButton):
         painter.setBrush(gradient)
         painter.drawEllipse(QPointF(0, 0), 400, 400)
         
-class ledSensor(QWidget):
+"""
+    Codigo de la Version 1.0 funcional de una implementacion para
+    de un Led para mostrar en la ventana principal
+
+    class ledSensor(QWidget):
     def __init__(self,ledColor:str, ):
         super().__init__()  
         self.ledColor = ledColor
@@ -99,4 +100,4 @@ class ledSensor(QWidget):
         self.ledSensor.setSizePolicy (QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.ledSensor.setStyleSheet(f"border:3px solid black; border-radius: {self.changeFactorCircle}px; background-color: {self.ledColor}")   
         
-        return self.ledSensor
+        return self.ledSensor"""

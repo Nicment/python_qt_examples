@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (QApplication)
 
 def main():
     app = QApplication(sys.argv)
-    ex  = indicator_window.ExampleDisplay()
+    ex  = indicator_window.signalsStateWindow()
     sys.exit(app.exec_())
 
 
