@@ -11,109 +11,13 @@ Author: Nicolás Silva
 import sys
 from LedIndicatorWidget import *
 from PyQt5 import QtGui
-from PyQt5.QtCore import (QSize, pyqtSlot, QPoint, Qt)
+from WidgetGenetator import*
+from PyQt5.QtCore import (pyqtSlot, Qt)
 #from PyQt5.QtGui import (QPictureIO, QPixmap, QPicture, QPainter)
-from PyQt5.QtWidgets import (QHBoxLayout, QFrame, QSplitter, QPushButton, QWidget, QLCDNumber, QSlider,
-                             QVBoxLayout, QApplication, QGridLayout, QLabel, QSizePolicy,
-                             )
+from PyQt5.QtWidgets import (QHBoxLayout, QFrame, QSplitter, QWidget, QLCDNumber,
+                             QVBoxLayout, QApplication, QGridLayout, QLabel)
 
-class ledSensor(QWidget):
-    def __init__(self,ledColor:str, ):
-        super().__init__()  
-        self.ledColor = ledColor
-        
-    def createLed(self):
-        
-        
-        self.ledSensor = QLabel("",self)
-        self.ledSensor.setMinimumSize(80,80)
-        self.ledSensor.setMaximumSize(80,80)
-        self.ledSensor.setSizePolicy (QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.ledSensor.setStyleSheet(f"border:3px solid black; border-radius: 40px; background-color: {self.ledColor}")   
-        
-        self.ledSensorContainer = QWidget()
-        self.ledSensorContainer.layout = QVBoxLayout()
-        self.ledSensorContainer.setLayout(self.ledSensorContainer.layout)
-        self.ledSensorContainer.layout.addWidget(self.ledSensor)
-        self.ledSensorContainer.setSizePolicy (QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.ledSensorContainer.setStyleSheet("border:0px solid black;")
-        self.ledSensorContainer.layout.setAlignment(Qt.AlignCenter)
-        
-        return self.ledSensorContainer
-      
-    def changeStateLed(self,changeFactor:int):
-        
-        #Se hace la implementacion del cambio de color del led
-        self.changeFactor = changeFactor
-        self.changeFactorCircle = (self.changeFactor//2)
-        self.ledSensor.setMinimumSize(self.changeFactor,self.changeFactor)
-        self.ledSensor.setMaximumSize(self.changeFactor,self.changeFactor)
-        self.ledSensor.setSizePolicy (QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.ledSensor.setStyleSheet(f"border:3px solid black; border-radius: {self.changeFactorCircle}px; background-color: {self.ledColor}")   
-        
-        return self.ledSensor 
-
-class textWidget(QLabel):
-    def __init__(self,textWidget:str, ):
-        super().__init__()  
-        self.textWidget = textWidget
-    
-    def createText(self):
-        
-        self.textSensor = QLabel(self.textWidget,self)
-        self.textSensor.setSizePolicy (QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.textSensor.setStyleSheet("font: 30px") 
-        return self.textSensor  
-        
-    def changeStateText(self, changeFactor):
-        self.changeFactor = (changeFactor//4)+20
-        #self.textSensor.setSizePolicy (QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.textSensor.setStyleSheet(f"border:0px solid white; font: {self.changeFactor}px")  
-        
-
-class widgetGenerator(QWidget):
-    
-    def __init__(self, text: QLabel, led:QLabel):
-        super().__init__()    
-        self.labelText = text 
-        self.ledSensor = led
-    
-    def verticalBoxWidget(self):
-            
-        self.verticalBox = QWidget()
-        self.verticalBox.layout = QVBoxLayout()
-        self.verticalBox.setLayout(self.verticalBox.layout) 
-        self.verticalBox.layout.addWidget(self.ledSensor)
-        self.verticalBox.layout.addWidget(self.labelText)
-        self.verticalBox.layout.setAlignment(Qt.AlignCenter)
-        self.verticalBox.setStyleSheet("border:3px solid black;")
-        
-        
-        return self.verticalBox
-    
-    def displayWidget(self,data: str):
-        
-        self.data = data   
-        self.lcd = QLCDNumber()
-        self.lcd.display(self.data)
-                 
-        self.sensor_display = QWidget()
-        self.sensor_display.layout = QHBoxLayout() 
-        self.sensor_display.setLayout(self.sensor_display.layout) 
-        self.sensor_display.layout.addWidget(self.labelText)
-        self.sensor_display.layout.addWidget(self.lcd)  
-        
-        return self.sensor_display
-
-class displayWidget(QWidget):
-    def __init__(self, data: int):
-        super().__init__()    
-        self.data = data    
-    def generate(self):               
-        self.lcd = QLCDNumber()
-        self.lcd.display(self.data)
-        return self.lcd
-
+ 
 class ExampleDisplay(QWidget):
 
     def __init__(self):
@@ -156,11 +60,7 @@ class ExampleDisplay(QWidget):
         self.change = 1
         self.temperature = 20
         self.humidity = 80
-        
-        #self.led = LedIndicator("red")
-        #self.led.setDisabled(True)  # Make the led non clickable
-
-        
+                
         self.driverText = textWidget("D Status")
         self.tempText = textWidget("T Status")
         self.electroValText = textWidget("E Status")
@@ -191,11 +91,9 @@ class ExampleDisplay(QWidget):
         
         self.sensor1= widgetGenerator(self.sensor1Text.createText(), self.sensor1Led).verticalBoxWidget()
         self.sensor2= widgetGenerator(self.sensor2Text.createText(), self.sensor2Led).verticalBoxWidget()
-        #self.packSensor1 = widgetGenerator(self.sensor2, self.sensor1).verticalBoxWidget()
         
         self.sensor3= widgetGenerator(self.sensor3Text.createText(), self.sensor3Led).verticalBoxWidget()
         self.sensor4= widgetGenerator(self.sensor4Text.createText(), self.sensor4Led).verticalBoxWidget()
-        #self.packSensor2 = widgetGenerator(self.sensor3,self.sensor4).verticalBoxWidget()
         
         self.dataTemp = widgetGenerator(self.displayTemperatureText,"white").displayWidget(f"{self.temperature}")
         self.dataHum = widgetGenerator(self.displayHumidityText,"white").displayWidget(f"{self.humidity}")

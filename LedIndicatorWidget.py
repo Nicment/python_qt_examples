@@ -64,3 +64,39 @@ class LedIndicator(QAbstractButton):
 
         painter.setBrush(gradient)
         painter.drawEllipse(QPointF(0, 0), 400, 400)
+        
+class ledSensor(QWidget):
+    def __init__(self,ledColor:str, ):
+        super().__init__()  
+        self.ledColor = ledColor
+        
+    def createLed(self):
+        
+        
+        self.ledSensor = QLabel("",self)
+        self.ledSensor.setMinimumSize(80,80)
+        self.ledSensor.setMaximumSize(80,80)
+        self.ledSensor.setSizePolicy (QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.ledSensor.setStyleSheet(f"border:3px solid black; border-radius: 40px; background-color: {self.ledColor}")   
+        
+        self.ledSensorContainer = QWidget()
+        self.ledSensorContainer.layout = QVBoxLayout()
+        self.ledSensorContainer.setLayout(self.ledSensorContainer.layout)
+        self.ledSensorContainer.layout.addWidget(self.ledSensor)
+        self.ledSensorContainer.setSizePolicy (QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.ledSensorContainer.setStyleSheet("border:0px solid black;")
+        self.ledSensorContainer.layout.setAlignment(Qt.AlignCenter)
+        
+        return self.ledSensorContainer
+      
+    def changeStateLed(self,changeFactor:int):
+        
+        #Se hace la implementacion del cambio de color del led
+        self.changeFactor = changeFactor
+        self.changeFactorCircle = (self.changeFactor//2)
+        self.ledSensor.setMinimumSize(self.changeFactor,self.changeFactor)
+        self.ledSensor.setMaximumSize(self.changeFactor,self.changeFactor)
+        self.ledSensor.setSizePolicy (QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.ledSensor.setStyleSheet(f"border:3px solid black; border-radius: {self.changeFactorCircle}px; background-color: {self.ledColor}")   
+        
+        return self.ledSensor
