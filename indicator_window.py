@@ -28,9 +28,11 @@ class signalsStateWindow(QWidget):
     def initUI(self):
         self.resize(1000, 500)
         
+        self.mainWindow = QGridLayout()
         self.change = 1
         self.temperature = 20
         self.humidity = 80
+        self.velocity = -5500
         
         """-------------- Definicion de los Textos  ----------------------"""  
                 
@@ -51,35 +53,52 @@ class signalsStateWindow(QWidget):
         
         """-------------- Definicion de los Leds  ----------------------"""  
               
-        self.driverLed = LedIndicator("red")
-        self.tempLed = LedIndicator("red")
+        self.driverLed = LedIndicator("green")
+        self.tempLed = LedIndicator("green")
         self.electroValLed = LedIndicator("green")
         
         self.sensor1Led = LedIndicator("green")
-        self.sensor2Led = LedIndicator("red")
+        self.sensor2Led = LedIndicator("green")
         self.sensor3Led = LedIndicator("green")
-        self.sensor4Led = LedIndicator("red")
+        self.sensor4Led = LedIndicator("green")
         
         self.checkSensorLed = LedIndicator("green")
         
-        self.displayTemperature = displayWidget(self.temperature).generate()
-        self.displayHumidity = displayWidget(self.humidity).generate()
+        self.temperatureDisplay = displayWidget(self.temperature)
+        self.humidityDisplay = displayWidget(self.humidity)
+        self.velocityDisplay = displayWidget(self.velocity)
         
-        self.driverStatus = widgetGenerator(self.driverText.createText(), self.driverLed).verticalBoxWidget()
-        self.tempStatus = widgetGenerator(self.tempText.createText(), self.tempLed).verticalBoxWidget()
-        self.elvaStatus = widgetGenerator(self.electroValText.createText(), self.electroValLed).verticalBoxWidget()
+        """----Se crean todos los sensores y estados que queremos mostrar------"""
         
-        self.sensor1= widgetGenerator(self.sensor1Text.createText(), self.sensor1Led).verticalBoxWidget()
-        self.sensor2= widgetGenerator(self.sensor2Text.createText(), self.sensor2Led).verticalBoxWidget()
+        self.dataTemp = widgetGenerator(self.temperatureDisplay.generate(),self.displayTemperatureText.createText()).VBoxWidget()
+        self.dataHum = widgetGenerator(self.humidityDisplay.generate(),self.displayHumidityText.createText()).VBoxWidget()
+        self.dataVel = widgetGenerator(self.velocityDisplay.generate(),self.displayVelocityText.createText()).VBoxWidget()
+    
+        self.driverStatus = widgetGenerator(self.driverLed, self.driverText.createText()).VBoxWidget()
+        self.tempStatus = widgetGenerator(self.tempLed, self.tempText.createText()).VBoxWidget()
+        self.elvaStatus = widgetGenerator(self.electroValLed, self.electroValText.createText(), ).VBoxWidget()
+        self.checkSensor = widgetGenerator(self.checkSensorLed,self.checkSensorText.createText()).VBoxWidget()
         
-        self.sensor3= widgetGenerator(self.sensor3Text.createText(), self.sensor3Led).verticalBoxWidget()
-        self.sensor4= widgetGenerator(self.sensor4Text.createText(), self.sensor4Led).verticalBoxWidget()
+        self.sensor1= widgetGenerator(self.sensor1Led , self.sensor1Text.createText()).VBoxWidget()
+        self.sensor2= widgetGenerator(self.sensor2Led , self.sensor2Text.createText()).VBoxWidget()
+        self.sensor3= widgetGenerator(self.sensor3Led , self.sensor3Text.createText()).VBoxWidget()
+        self.sensor4= widgetGenerator(self.sensor4Led , self.sensor4Text.createText()).VBoxWidget()
+        """-----------------------------------------------------------------------------------------"""
+        """Se hace la organización de los Displays que mostraran la informacion de los sensores"""
         
-        self.dataTemp = widgetGenerator(self.displayTemperatureText,"white").displayWidget(f"{self.temperature}")
-        self.dataHum = widgetGenerator(self.displayHumidityText,"white").displayWidget(f"{self.humidity}")
+        self.displays = QWidget()
+        self.displays.layout = QHBoxLayout()
+        self.displays.setLayout(self.displays.layout) 
+        self.displays.layout.addWidget(self.dataTemp)
+        self.displays.layout.addWidget(self.dataHum)
+        self.displays.layout.addWidget(self.dataVel)
+        self.displays.layout.setAlignment(Qt.AlignCenter)
         
+        """-----------------------------------------------------------------------------------------"""
         
-        #self.checkSensor = widgetGenerator(self.checkSensorText,self.checkSensorLed).verticalBoxWidget()
+        """Se montan todos los sensores en una caja 
+        horizontal para facilitar su acomodacion
+        en la pestaña principal"""
         
         self.sensores = QWidget()
         self.sensores.layout = QHBoxLayout()
@@ -89,7 +108,12 @@ class signalsStateWindow(QWidget):
         self.sensores.layout.addWidget(self.sensor3)
         self.sensores.layout.addWidget(self.sensor4)
         self.sensores.layout.setAlignment(Qt.AlignCenter)
-        self.sensores.setStyleSheet("border:0px solid black;")
+        
+        """-----------------------------------------------------------------------------------------"""
+        
+        """Se montan todos los estados de los sensores principales
+        en una caja horizontal para facilitar su acomodacion
+        en la pestaña principal"""
         
         self.dataState = QWidget()
         self.dataState.layout = QHBoxLayout()
@@ -98,40 +122,28 @@ class signalsStateWindow(QWidget):
         self.dataState.layout.addWidget(self.tempStatus)
         self.dataState.layout.addWidget(self.elvaStatus)
         self.dataState.layout.setAlignment(Qt.AlignCenter)
-        self.dataState.setStyleSheet("border:0px solid black;")
         
-        self.checkSensorState = QWidget()
-        self.checkSensorState.layout = QVBoxLayout()
-        self.checkSensorState.setLayout(self.checkSensorState.layout) 
-        self.checkSensorState.layout.addWidget(self.checkSensorLed)
-        self.checkSensorState.layout.addWidget(self.checkSensorText.createText())
-        self.checkSensorState.layout.setAlignment(Qt.AlignCenter)
-        self.checkSensorState.setStyleSheet("border:0px solid black;")
+        """---------------------------------------------------------------------------------------------"""
         
-        hbox = QHBoxLayout(self)
+        """
+        * Se agregan los Widgets que se quieren mostrar 
+        * al mainWindow 
+        """
+        self.topWidget = self.displays
+        self.middleWidget = widgetGenerator(self.dataState, self.checkSensor).HBoxWidget()
+        self.middleWidget.setStyleSheet("border:0px solid black;")
+        self.bottonWidget = self.sensores
         
-        topTop = QFrame(self)
-        topTop.setFrameShape(QFrame.StyledPanel)
+        self.mainWindow.addWidget(self.topWidget, 0,0)
+        self.mainWindow.addWidget(self.middleWidget, 1,0)
+        self.mainWindow.addWidget(self.bottonWidget,2,0)
         
-        topleft = self.dataState
-
-        topright = self.checkSensorState
-
-        bottom = self.sensores
-
-        splitter1 = QSplitter(Qt.Horizontal)
-        splitter1.addWidget(topleft)
-        splitter1.addWidget(topright)
-
-        splitter2 = QSplitter(Qt.Vertical)
-        splitter2.addWidget(topTop)
-        splitter2.addWidget(splitter1)
-        splitter2.addWidget(bottom)
-
-        hbox.addWidget(splitter2)
+        """
+        *------------------------------------------------------------
+        """
         
         self.setWindowTitle('Status Sensors')
-        self.setLayout(hbox)
+        self.setLayout(self.mainWindow)
         
         self.show()
             
@@ -159,5 +171,14 @@ class signalsStateWindow(QWidget):
         self.sensor3Text.changeStateText(self.changeFactor)
         self.sensor4Text.changeStateText(self.changeFactor)
         self.electroValText.changeStateText(self.changeFactor)
-        self.checkSensorText.changeStateText(self.changeFactor)
+        self.checkSensorText.changeStateText(self.changeFactor*2)
+        
+        self.displayTemperatureText.changeStateText(self.changeFactor)
+        self.displayHumidityText.changeStateText(self.changeFactor)
+        self.displayVelocityText.changeStateText(self.changeFactor)
+        
+        self.temperatureDisplay.changeSize(self.changeFactor)
+        self.humidityDisplay.changeSize(self.changeFactor)
+        self.velocityDisplay.changeSize(self.changeFactor)
+        print (self.changeFactor)
                 

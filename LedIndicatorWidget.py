@@ -61,7 +61,6 @@ class LedIndicator(QAbstractButton):
 
         painter.setBrush(gradient)
         painter.drawEllipse(QPointF(0, 0), 400, 400)
-        
 """
     Codigo de la Version 1.0 funcional de una implementacion para
     de un Led para mostrar en la ventana principal

@@ -27,23 +27,36 @@ class textWidget(QLabel):
 
 class widgetGenerator(QWidget):
     
-    def __init__(self, text: QLabel, led:QLabel):
+    def __init__(self, topWidget, bottomWidget):
         super().__init__()    
-        self.labelText = text 
-        self.ledSensor = led
+        self.topWidget = topWidget 
+        self.bottomWidget = bottomWidget
     
-    def verticalBoxWidget(self):
+    def VBoxWidget(self):
             
         self.verticalBox = QWidget()
         self.verticalBox.layout = QVBoxLayout()
         self.verticalBox.setLayout(self.verticalBox.layout) 
-        self.verticalBox.layout.addWidget(self.ledSensor)
-        self.verticalBox.layout.addWidget(self.labelText)
+        self.verticalBox.layout.addWidget(self.topWidget)
+        self.verticalBox.layout.addWidget(self.bottomWidget)
         self.verticalBox.layout.setAlignment(Qt.AlignCenter)
         self.verticalBox.setStyleSheet("border:3px solid black;")
         
         
         return self.verticalBox
+    
+    def HBoxWidget(self):
+            
+        self.horizontalBox = QWidget()
+        self.horizontalBox.layout = QHBoxLayout()
+        self.horizontalBox.setLayout(self.horizontalBox.layout) 
+        self.horizontalBox.layout.addWidget(self.topWidget)
+        self.horizontalBox.layout.addWidget(self.bottomWidget)
+        self.horizontalBox.layout.setAlignment(Qt.AlignCenter)
+        self.horizontalBox.setStyleSheet("border:3px solid black;")
+        
+        
+        return self.horizontalBox
     
     def displayWidget(self,data: str):
         
@@ -54,16 +67,22 @@ class widgetGenerator(QWidget):
         self.sensor_display = QWidget()
         self.sensor_display.layout = QHBoxLayout() 
         self.sensor_display.setLayout(self.sensor_display.layout) 
-        self.sensor_display.layout.addWidget(self.labelText)
-        self.sensor_display.layout.addWidget(self.lcd)  
+        self.sensor_display.layout.addWidget(self.topWidget)
+        self.sensor_display.layout.addWidget(self.lcd)
+        self.sensor_display.layout.setAlignment(Qt.AlignCenter)  
         
         return self.sensor_display
 
 class displayWidget(QWidget):
     def __init__(self, data: int):
         super().__init__()    
-        self.data = data    
+        self.data = data 
+        self.changeFactor = 200   
     def generate(self):               
         self.lcd = QLCDNumber()
         self.lcd.display(self.data)
+        self.lcd.setMinimumSize(self.changeFactor,self.changeFactor/2)
         return self.lcd
+    def changeSize(self, changeFactor:int):
+        self.changeFactor = changeFactor*4 
+        self.lcd.setMinimumSize(self.changeFactor,self.changeFactor//2)
